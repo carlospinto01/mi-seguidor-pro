@@ -41,11 +41,27 @@ h2 {
 }
 
 .task {
-  background: #3e3e5a;
   padding: 8px;
   margin: 8px 0;
   border-radius: 8px;
   cursor: grab;
+  transition: 0.3s;
+}
+
+.pendiente {
+  background: #555;
+}
+
+.proceso {
+  background: #1976d2;
+}
+
+.espera {
+  background: #ff9800;
+}
+
+.terminado {
+  background: #4CAF50;
 }
 
 .task small {
@@ -204,4 +220,5 @@ if ('serviceWorker' in navigator) {
 </script>
 
 </body>
+
 </html>
