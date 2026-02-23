@@ -1,4 +1,4 @@
-const CACHE_NAME = "seguidor-pro-v2";
+const CACHE_NAME = "seguidor-pro-v3";
 
 self.addEventListener("install", event => {
   self.skipWaiting();
