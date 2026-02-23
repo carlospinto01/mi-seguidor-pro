@@ -48,27 +48,16 @@ h2 {
   transition: 0.3s;
 }
 
-.pendiente {
-  background: #555;
-}
-
-.proceso {
-  background: #1976d2;
-}
-
-.espera {
-  background: #ff9800;
-}
-
-.terminado {
-  background: #4CAF50;
-}
+.pendiente { background: #555; }
+.proceso { background: #1976d2; }
+.espera { background: #ff9800; }
+.terminado { background: #4CAF50; }
 
 .task small {
   display: block;
   font-size: 11px;
   margin-top: 5px;
-  color: #ccc;
+  color: #ddd;
 }
 
 button {
@@ -101,21 +90,10 @@ button {
 <div id="stats"></div>
 
 <div class="board">
-  <div class="column" data-status="pendiente">
-    <h2>Pendiente</h2>
-  </div>
-
-  <div class="column" data-status="proceso">
-    <h2>En proceso</h2>
-  </div>
-
-  <div class="column" data-status="espera">
-    <h2>En espera</h2>
-  </div>
-
-  <div class="column" data-status="terminado">
-    <h2>Terminado</h2>
-  </div>
+  <div class="column" data-status="pendiente"><h2>Pendiente</h2></div>
+  <div class="column" data-status="proceso"><h2>En proceso</h2></div>
+  <div class="column" data-status="espera"><h2>En espera</h2></div>
+  <div class="column" data-status="terminado"><h2>Terminado</h2></div>
 </div>
 
 <button class="add-btn" onclick="addTask()">+</button>
@@ -136,7 +114,7 @@ function render() {
 
   tasks.forEach(task => {
     const div = document.createElement("div");
-    div.className = "task";
+    div.className = "task " + task.status;
     div.draggable = true;
 
     div.innerHTML = `
@@ -214,11 +192,10 @@ checkDeadlines();
 render();
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js');
+  navigator.serviceWorker.register('./service-worker.js');
 }
 
 </script>
 
 </body>
-
 </html>
