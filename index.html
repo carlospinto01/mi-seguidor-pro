@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Seguidor PRO</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #1e1e2f;
+  color: white;
+  margin: 0;
+  padding: 10px;
+}
+
+#stats {
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.board {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.column {
+  background: #2c2c3e;
+  width: 24%;
+  padding: 10px;
+  border-radius: 10px;
+  min-height: 400px;
+}
+
+h2 {
+  text-align: center;
+}
+
+.task {
+  background: #3e3e5a;
+  padding: 8px;
+  margin: 8px 0;
+  border-radius: 8px;
+  cursor: grab;
+}
+
+.task small {
+  display: block;
+  font-size: 11px;
+  margin-top: 5px;
+  color: #ccc;
+}
+
+button {
+  padding: 6px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.add-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #4CAF50;
+  color: white;
+  font-size: 18px;
+}
+
+.delete-btn {
+  background: red;
+  color: white;
+  font-size: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="stats"></div>
+
+<div class="board">
+  <div class="column" data-status="pendiente">
+    <h2>Pendiente</h2>
+  </div>
+
+  <div class="column" data-status="proceso">
+    <h2>En proceso</h2>
+  </div>
+
+  <div class="column" data-status="espera">
+    <h2>En espera</h2>
+  </div>
+
+  <div class="column" data-status="terminado">
+    <h2>Terminado</h2>
+  </div>
+</div>
+
+<button class="add-btn" onclick="addTask()">+</button>
+
+<script>
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function render() {
+  document.querySelectorAll(".column").forEach(col => {
+    const title = col.querySelector("h2").innerText;
+    col.innerHTML = "<h2>" + title + "</h2>";
+  });
+
+  tasks.forEach(task => {
+    const div = document.createElement("div");
+    div.className = "task";
+    div.draggable = true;
+
+    div.innerHTML = `
+      <strong>${task.text}</strong>
+      <small>Prioridad: ${task.priority}</small>
+      <small>Fecha: ${task.date}</small>
+      <button class="delete-btn" onclick="deleteTask(${task.id})">Eliminar</button>
+    `;
+
+    div.ondragstart = (e) => {
+      e.dataTransfer.setData("id", task.id);
+    };
+
+    const column = document.querySelector(`[data-status="${task.status}"]`);
+    column.appendChild(div);
+  });
+
+  updateStats();
+}
+
+function addTask() {
+  const text = prompt("Tarea:");
+  if (!text) return;
+
+  const priority = prompt("Prioridad (Alta/Media/Baja):") || "Media";
+  const date = prompt("Fecha límite (YYYY-MM-DD):") || "Sin fecha";
+
+  const newTask = {
+    id: Date.now(),
+    text,
+    priority,
+    date,
+    status: "pendiente"
+  };
+
+  tasks.push(newTask);
+  saveTasks();
+  render();
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  saveTasks();
+  render();
+}
+
+document.querySelectorAll(".column").forEach(col => {
+  col.ondragover = (e) => e.preventDefault();
+  col.ondrop = (e) => {
+    const id = e.dataTransfer.getData("id");
+    const task = tasks.find(t => t.id == id);
+    task.status = col.dataset.status;
+    saveTasks();
+    render();
+  };
+});
+
+function updateStats() {
+  const total = tasks.length;
+  const completed = tasks.filter(t => t.status === "terminado").length;
+  document.getElementById("stats").innerHTML =
+    `Total: ${total} | Completadas: ${completed}`;
+}
+
+function checkDeadlines() {
+  const today = new Date().toISOString().split("T")[0];
+  tasks.forEach(task => {
+    if (task.date === today && task.status !== "terminado") {
+      alert("⚠️ Tarea vence hoy: " + task.text);
+    }
+  });
+}
+
+checkDeadlines();
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+
+</script>
+
+</body>
+</html>
