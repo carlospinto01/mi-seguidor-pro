@@ -1,7 +1,7 @@
 {
   "name": "Mi Seguidor PRO",
   "short_name": "Seguidor",
-  "start_url": "index.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#1e1e2f",
   "theme_color": "#4CAF50",
